@@ -1,9 +1,6 @@
 
-
-===========================================================
       ROPE CONDITION ANALYZER – OFFLINE AI PROJECT
-===========================================================
-
+      
 PROJECT TITLE:
 -----------------
 "Elevator Rope Health Monitoring using AI and Computer Vision"
