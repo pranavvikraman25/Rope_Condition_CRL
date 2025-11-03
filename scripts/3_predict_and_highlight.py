@@ -6,9 +6,8 @@ from PIL import Image
 import numpy as np
 import cv2
 
-# ---------------------------------------------------------
-# 🧠 U-Net model (same as used during training)
-# ---------------------------------------------------------
+
+
 class UNet(nn.Module):
     def __init__(self):
         super(UNet, self).__init__()
@@ -26,17 +25,13 @@ class UNet(nn.Module):
         x = self.decoder(x)
         return x
 
-# ---------------------------------------------------------
-# ⚙️ Load model
-# ---------------------------------------------------------
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = UNet().to(device)
 model.load_state_dict(torch.load("models/unet_model.pth", map_location=device))
 model.eval()
 
-# ---------------------------------------------------------
-# 📸 Choose an image for testing
-# ---------------------------------------------------------
+
 test_img_path = "dataset/images/PA180001.jpg"  # or any other image
 img = Image.open(test_img_path).convert("RGB")
 
@@ -46,16 +41,12 @@ transform = transforms.Compose([
 ])
 input_tensor = transform(img).unsqueeze(0).to(device)
 
-# ---------------------------------------------------------
-# 🔍 Predict mask
-# ---------------------------------------------------------
+
 with torch.no_grad():
     output = model(input_tensor)
 prediction = torch.argmax(output, dim=1).squeeze(0).cpu().numpy()
 
-# ---------------------------------------------------------
-# 🎨 Convert prediction to color + bounding boxes
-# ---------------------------------------------------------
+
 img_np = np.array(img.resize((256, 256)))
 output_vis = img_np.copy()
 
@@ -78,9 +69,7 @@ for cls, name in classes.items():
             cv2.putText(output_vis, label, (x, y-5), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, colors[cls], 2)
 
-# ---------------------------------------------------------
-# 💾 Save / Show
-# ---------------------------------------------------------
+
 os.makedirs("results", exist_ok=True)
 save_path = os.path.join("results", f"boxed_{os.path.basename(test_img_path)}")
 cv2.imwrite(save_path, cv2.cvtColor(output_vis, cv2.COLOR_RGB2BGR))
@@ -88,3 +77,4 @@ cv2.imwrite(save_path, cv2.cvtColor(output_vis, cv2.COLOR_RGB2BGR))
 print("✅ Detection complete.")
 print(f"Saved output image with boxes: {save_path}")
 print(f"Detected: {counts[1]} rust zones, {counts[2]} cut zones")
+
